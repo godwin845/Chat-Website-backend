@@ -27,10 +27,9 @@ app.use('/api/user',userRouter)
 //     res.sendFile(path.join(__dirname,"frontend","dist","index.html"))
 // })
 
-const HOST = process.env.HOST || '0.0.0.0'
-const PORT = process.env.PORT || 10000
+const PORT = process.env.PORT || 10000;
 
-server.listen(HOST, PORT,()=>{
+server.listen(PORT, () => {
     dbConnect();
-    console.log(`Server running on http://${HOST}:${PORT}`);
-})
+    console.log(`Server running on port ${PORT}`);
+});
