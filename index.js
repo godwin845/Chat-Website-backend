@@ -15,7 +15,7 @@ import {app , server} from './Socket/socket.js'
 dotenv.config();
 
 app.use(cors({
-    origin: "http://localhost:5173", // frontend URL
+    origin: "https://chat-web-site-mern.netlify.app", // frontend URL
     credentials: true // if you need cookies or auth headers
 }));
 
