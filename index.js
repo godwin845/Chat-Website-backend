@@ -5,6 +5,7 @@ import authRouter from  './rout/authUser.js'
 import messageRouter from './rout/messageRout.js'
 import userRouter from './rout/userRout.js'
 import cookieParser from "cookie-parser";
+import cors from "cors";
 // import path from "path";
 
 import {app , server} from './Socket/socket.js'
@@ -12,6 +13,11 @@ import {app , server} from './Socket/socket.js'
 // const __dirname = path.resolve();
 
 dotenv.config();
+
+app.use(cors({
+    origin: "http://localhost:5173", // frontend URL
+    credentials: true // if you need cookies or auth headers
+}));
 
 
 app.use(express.json());
