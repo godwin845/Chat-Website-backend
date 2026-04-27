@@ -4,7 +4,7 @@ import User from "../Models/userModels.js";
 export const getUserBySearch=async(req,res)=>{
 try {
     const search = req.query.search || '';
-    const currentUserID = req.user._conditions._id;
+    const currentUserID = req.user._id;
     const user = await User.find({
         $and:[
             {
@@ -32,7 +32,7 @@ try {
 
 export const getCorrentChatters=async(req,res)=>{
     try {
-        const currentUserID = req.user._conditions._id;
+        const currentUserID = req.user._id;
         const currenTChatters = await Conversation.find({
             participants:currentUserID
         }).sort({
@@ -42,7 +42,9 @@ export const getCorrentChatters=async(req,res)=>{
             if(!currenTChatters || currenTChatters.length === 0)  return res.status(200).send([]);
 
             const partcipantsIDS = currenTChatters.reduce((ids,conversation)=>{
-                const otherParticipents = conversation.participants.filter(id => id !== currentUserID);
+                const otherParticipents = conversation.participants.filter(
+                    (id) => id.toString() !== currentUserID.toString()
+                );
                 return [...ids , ...otherParticipents]
             },[])
 

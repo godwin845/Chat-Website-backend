@@ -76,8 +76,12 @@ export const userLogin = async (req, res) => {
 export const userLogOut=async(req,res)=>{
     
     try {
+        const isProduction = process.env.NODE_ENV === "production";
         res.cookie("jwt",'',{
-            maxAge:0
+            maxAge:0,
+            httpOnly: true,
+            sameSite: isProduction ? "none" : "lax",
+            secure: isProduction,
         })
         res.status(200).send({success:true ,message:"User LogOut"})
 

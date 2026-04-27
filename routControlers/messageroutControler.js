@@ -4,9 +4,14 @@ import { getReciverSocketId,io } from "../Socket/socket.js";
 
 export const sendMessage =async(req,res)=>{
 try {
-    const {messages} = req.body;
+    const { message, messages } = req.body;
+    const messageText = message ?? messages;
     const {id:reciverId} = req.params;
-    const senderId = req.user._conditions._id;
+    const senderId = req.user._id;
+
+    if (!messageText || typeof messageText !== "string") {
+        return res.status(400).send({ success: false, message: "Message is required" });
+    }
 
 
     let chats = await Conversation.findOne({
@@ -22,7 +27,7 @@ try {
     const newMessages = new Message({
         senderId,
         reciverId,
-        message:messages,
+        message: messageText,
         conversationId: chats._id
     })
 
@@ -53,7 +58,7 @@ try {
 export const getMessages=async(req,res)=>{
 try {
     const {id:reciverId} = req.params;
-    const senderId = req.user._conditions._id;
+    const senderId = req.user._id;
 
     const chats = await Conversation.findOne({
         participants:{$all:[senderId , reciverId]}
