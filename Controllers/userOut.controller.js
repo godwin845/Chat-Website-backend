@@ -11,7 +11,6 @@ export const userRegister = async (req, res) => {
             _id: user._id,
             fullname: user.fullname,
             username: user.username,
-            profilePic: user.profilePic,
             email: user.email,
         });
 
@@ -36,7 +35,6 @@ export const userLogin = async (req, res) => {
             _id: user._id,
             fullname: user.fullname,
             username: user.username,
-            profilePic: user.profilePic,
             email: user.email,
             message: "Successfully Logged In"
         });

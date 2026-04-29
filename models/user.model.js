@@ -31,12 +31,6 @@ const userSchema = mongoose.Schema({
         minlength:6,
     },
 
-    profilepic:{
-        type: String,
-        required: true,
-        default:""
-    }
-
 },{ timestamps:true });
 
 const User = mongoose.model("User",userSchema);

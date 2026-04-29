@@ -1,7 +1,7 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
 
-export const registerUser = async ({ fullname, username, email, gender, password, profilePic }) => {
+export const registerUser = async ({ fullname, username, email, gender, password }) => {
 
     if (!fullname || !username || !email || !password || !gender) {
         throw new Error("All fields are required");
@@ -17,16 +17,12 @@ export const registerUser = async ({ fullname, username, email, gender, password
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const defaultBoy = `https://avatar.iran.liara.run/public/boy?username=${username}`;
-    const defaultGirl = `https://avatar.iran.liara.run/public/girl?username=${username}`;
-
     const newUser = await User.create({
         fullname,
         username,
         email,
         password: hashedPassword,
-        gender,
-        profilePic: profilePic || (gender === "male" ? defaultBoy : defaultGirl)
+        gender
     });
 
     return newUser;
