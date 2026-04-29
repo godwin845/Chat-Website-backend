@@ -1,83 +1,54 @@
-import Conversation from "../models/conversation.model.js";
-import Message from "../models/message.model.js";
+import { createMessage, fetchMessages } from "../services/message.service.js";
 import { getReceiverSocketId, io } from "../Socket/socket.js";
 
-export const sendMessage = async(req, res) => {
-
+export const sendMessage = async (req, res) => {
     try {
         const { message, messages } = req.body;
-
         const messageText = message ?? messages;
-        const {id:receiverId} = req.params;
+
+        const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
-        if (!messageText || typeof messageText !== "string") {
-            return res.status(400).send({ success: false, message: "Message is required" });
-        }
-
-
-        let chats = await Conversation.findOne({
-            participants:{$all:[senderId , receiverId]}
-        })
-
-        if(!chats){
-            chats = await Conversation.create({
-                participants:[senderId , receiverId],
-            })
-        }
-
-        const newMessages = new Message({
+        const newMessage = await createMessage({
             senderId,
             receiverId,
-            message: messageText,
-            conversationId: chats._id
-        })
+            messageText
+        });
 
-        if(newMessages){
-            chats.messages.push(newMessages._id);
-        }
-
-        await Promise.all([chats.save(),newMessages.save()]);
-
-        //SOCKET.IO function 
+        // SOCKET.IO
         const receiverSocketId = getReceiverSocketId(receiverId);
-        if(receiverSocketId){
-            io.to(receiverSocketId).emit("newMessage",newMessages)
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage);
         }
 
-        res.status(201).send(newMessages)
+        res.status(201).send(newMessage);
 
     } catch (error) {
+        console.log(`error in sendMessage ${error}`);
         res.status(500).send({
             success: false,
-            message: error
-        })
-        console.log(`error in sendMessage ${error}`);
+            message: error.message || error
+        });
     }
-    }
+};
 
-
-export const getMessages = async(req, res) => {
-
+export const getMessages = async (req, res) => {
     try {
-        const {id:receiverId} = req.params;
+        const { id: receiverId } = req.params;
         const senderId = req.user._id;
 
-        const chats = await Conversation.findOne({
-            participants:{$all:[senderId , receiverId]}
-        }).populate("messages")
+        const messages = await fetchMessages({
+            senderId,
+            receiverId
+        });
 
-        if(!chats)  return res.status(200).send([]);
-
-        const message = chats.messages;
-        res.status(200).send(message)
+        res.status(200).send(messages);
 
     } catch (error) {
+        console.log(`error in getMessages ${error}`);
         res.status(500).send({
             success: false,
-            message: error
-        })
-        
-        console.log(`error in getMessage ${error}`);
+            message: error.message || error
+        });
     }
-    }
+};
